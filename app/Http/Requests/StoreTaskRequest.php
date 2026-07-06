@@ -12,7 +12,7 @@ class StoreTaskRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return auth()->check();
     }
 
     /**
@@ -23,9 +23,24 @@ class StoreTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|max:255',
-            'description' => 'nullable|string',
-            'status' => 'sometimes|in:in_progress,completed', // Иногда передаётся, иногда нет
+            'title' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
+            'description' => [
+                'nullable',
+                'string',
+            ],
+
+            'status' => [
+                'sometimes',
+                Rule::in([
+                    Task::STATUS_IN_PROGRESS,
+                    Task::STATUS_COMPLETED,
+                ]),
+            ],
         ];
     }
 }

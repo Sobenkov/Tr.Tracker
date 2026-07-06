@@ -12,8 +12,8 @@ class TaskController extends Controller
     // Список только своих задач
     public function index()
     {
-        $tasks = Task::where('user_id', auth()->id())
-            ->orderBy('created_at', 'desc')
+        $tasks = Task::owned()
+            ->latest()
             ->get();
 
         return view('tasks.index', compact('tasks'));
@@ -39,23 +39,20 @@ class TaskController extends Controller
 
     public function edit(Task $task)
     {
-        // Проверка, что задача принадлежит текущему пользователю
-        if ($task->user_id !== auth()->id()) {
-            abort(403);
-        }
+        abort_if($task->user_id !== auth()->id(), 403);
+
         return view('tasks.edit', compact('task'));
     }
 
     public function update(UpdateTaskRequest $request, Task $task)
     {
-        if ($task->user_id !== auth()->id()) {
-            abort(403);
-        }
+        abort_if($task->user_id !== auth()->id(), 403);
 
         $data = $request->only(['title', 'description', 'status']);
 
-        if ($request->has('add_minutes') && $request->add_minutes > 0) {
-            $task->time_spent_minutes += $request->add_minutes;
+        if ($request->integer('add_minutes') > 0) {
+            $data['time_spent_minutes'] =
+                $task->time_spent_minutes + $request->integer('add_minutes');
         }
 
         $task->update($data);
@@ -65,9 +62,9 @@ class TaskController extends Controller
 
     public function destroy(Task $task)
     {
-        if ($task->user_id === auth()->id()) {
-            $task->delete();
-        }
+        abort_if($task->user_id !== auth()->id(), 403);
+        $task->delete();
+
         return redirect()->route('tasks.index');
     }
 }
