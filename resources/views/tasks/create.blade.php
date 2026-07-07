@@ -1,149 +1,149 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="py-12">
-        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
+    <div class="max-w-3xl mx-auto px-8 py-10">
 
-            {{-- Заголовок --}}
-            <div class="mb-6">
-                <h1 class="text-3xl font-bold text-gray-900">
-                    Создать задачу
-                </h1>
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold tracking-tight text-gray-900">
+                Создать задачу
+            </h1>
 
-                <p class="mt-2 text-gray-500">
-                    Заполните информацию о новой задаче.
-                </p>
+            <p class="mt-2 text-gray-500">
+                Заполните информацию о новой задаче.
+            </p>
+        </div>
+
+        @if ($errors->any())
+            <div class="mb-6 rounded-xl border border-red-200 bg-red-50 p-4">
+                <h3 class="font-semibold text-red-700">
+                    Не удалось сохранить задачу
+                </h3>
+
+                <ul class="mt-2 list-disc list-inside text-sm text-red-600">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
+        @endif
 
-            {{-- Ошибки --}}
-            @if ($errors->any())
-                <div class="mb-6 rounded-lg border border-red-200 bg-red-50 p-4">
-                    <div class="font-semibold text-red-700">
-                        Исправьте ошибки:
-                    </div>
+        <div class="rounded-2xl bg-white border border-gray-200 shadow-sm p-8">
 
-                    <ul class="mt-2 list-disc list-inside text-sm text-red-600">
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
+            <form action="{{ route('tasks.store') }}" method="POST">
+
+                @csrf
+
+                {{-- Название --}}
+                <div class="mb-6">
+
+                    <label
+                        for="title"
+                        class="block mb-2 text-sm font-semibold text-gray-700">
+
+                        Название
+
+                    </label>
+
+                    <input
+                        id="title"
+                        type="text"
+                        name="title"
+                        value="{{ old('title') }}"
+
+                        class="w-full rounded-xl border border-gray-300 px-4 py-3
+                           focus:border-blue-500 focus:ring-2 focus:ring-blue-200
+                           outline-none transition"
+
+                        required>
+
                 </div>
-            @endif
 
-            {{-- Карточка --}}
-            <div class="px-8 py-10">
+                {{-- Описание --}}
+                <div class="mb-6">
 
-                <form
-                    action="{{ route('tasks.store') }}"
-                    method="POST"
-                    class="p-8 space-y-6"
-                >
+                    <label
+                        for="description"
+                        class="block mb-2 text-sm font-semibold text-gray-700">
 
-                    @csrf
+                        Описание
 
-                    {{-- Название --}}
-                    <div>
-                        <label
-                            for="title"
-                            class="block text-sm font-medium text-gray-700 mb-2">
+                    </label>
 
-                            Название
+                    <textarea
+                        id="description"
+                        name="description"
+                        rows="6"
 
-                        </label>
+                        class="w-full rounded-xl border border-gray-300 px-4 py-3
+                           focus:border-blue-500 focus:ring-2 focus:ring-blue-200
+                           outline-none transition">{{ old('description') }}</textarea>
 
-                        <input
-                            id="title"
-                            type="text"
-                            name="title"
-                            value="{{ old('title') }}"
-                            required
+                </div>
 
-                            class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                        >
-                    </div>
+                {{-- Статус --}}
+                <div class="mb-8">
 
-                    {{-- Описание --}}
-                    <div>
+                    <label
+                        for="status"
+                        class="block mb-2 text-sm font-semibold text-gray-700">
 
-                        <label
-                            for="description"
-                            class="block text-sm font-medium text-gray-700 mb-2">
+                        Статус
 
-                            Описание
+                    </label>
 
-                        </label>
+                    <select
+                        id="status"
+                        name="status"
 
-                        <textarea
-                            id="description"
-                            name="description"
-                            rows="5"
+                        class="w-full rounded-xl border border-gray-300 px-4 py-3
+                           focus:border-blue-500 focus:ring-2 focus:ring-blue-200
+                           outline-none transition">
 
-                            class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                        >{{ old('description') }}</textarea>
+                        <option value="in_progress"
+                            @selected(old('status') == 'in_progress')>
+                            В работе
+                        </option>
 
-                    </div>
+                        <option value="completed"
+                            @selected(old('status') == 'completed')>
+                            Завершена
+                        </option>
 
-                    {{-- Статус --}}
-                    <div>
+                    </select>
 
-                        <label
-                            for="status"
-                            class="block text-sm font-medium text-gray-700 mb-2">
+                </div>
 
-                            Статус
+                {{-- Кнопки --}}
+                <div class="flex items-center gap-4">
 
-                        </label>
+                    <button
+                        type="submit"
 
-                        <select
-                            id="status"
-                            name="status"
+                        class="rounded-xl bg-blue-600 px-6 py-3
+                           font-semibold text-white shadow-lg
+                           transition-all duration-200
+                           hover:bg-blue-700 hover:shadow-xl">
 
-                            class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                        💾 Сохранить
 
-                            <option
-                                value="in_progress"
-                                @selected(old('status') == 'in_progress')
-                            >
-                                В работе
-                            </option>
+                    </button>
 
-                            <option
-                                value="completed"
-                                @selected(old('status') == 'completed')
-                            >
-                                Завершена
-                            </option>
+                    <a
+                        href="{{ route('tasks.index') }}"
 
-                        </select>
+                        class="rounded-xl border border-gray-300 px-6 py-3
+                           font-medium text-gray-700
+                           transition hover:bg-gray-100">
 
-                    </div>
+                        Отмена
 
-                    {{-- Кнопки --}}
-                    <div class="flex justify-end gap-3 pt-4">
+                    </a>
 
-                        <a
-                            href="{{ route('tasks.index') }}"
-                            class="rounded-lg border border-gray-300 px-5 py-2.5 text-gray-700 hover:bg-gray-100 transition">
+                </div>
 
-                            Отмена
-
-                        </a>
-
-                        <button
-                            type="submit"
-
-                            class="rounded-lg bg-blue-600 px-5 py-2.5 font-semibold text-white shadow hover:bg-blue-700 transition">
-
-                            💾 Сохранить
-
-                        </button>
-
-                    </div>
-
-                </form>
-
-            </div>
+            </form>
 
         </div>
+
     </div>
 @endsection

@@ -6,10 +6,8 @@ use App\Http\Controllers\TaskController;
 
 
 Route::get('/', function () {
-    return auth()->check()
-        ? redirect()->route('tasks.index')
-        : view('welcome');
-});
+    return view('welcome');
+})->name('home');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -28,6 +26,5 @@ Route::prefix('tasks')->name('tasks.')->group(function () {
     Route::get('/{task}/edit', [TaskController::class, 'edit'])->name('edit');
     Route::put('/{task}', [TaskController::class, 'update'])->name('update');
 });
-
 
 require __DIR__.'/auth.php';
