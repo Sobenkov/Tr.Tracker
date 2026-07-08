@@ -7,21 +7,20 @@
         <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between mb-10">
 
             <div>
-                <h1 class="text-4xl font-bold tracking-tight text-gray-900 mt-4">
+
+                <h1 class="text-4xl font-bold tracking-tight text-gray-900">
                     Мои задачи
                 </h1>
 
-                <div class="mt-4 inline-flex items-center rounded-full bg-gray-100 text-sm text-gray-600">
-                    Всего задач:
-                    <span class="font-semibold text-gray-900">
-                    {{ $tasks->count() }}
-                </span>
-                </div>
+                <p class="mt-3 text-gray-500">
+                    Всего задач: <span class="font-semibold text-gray-900">{{ $tasks->count() }}</span>
+                </p>
+
             </div>
 
             <a href="{{ route('tasks.create') }}"
-               class="my-4 inline-flex items-center justify-center rounded-xl bg-blue-600 px-6 py-4 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:bg-blue-700 hover:shadow-xl">
-                ➕ Новая задача
+               class="inline-flex items-center rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-blue-700">
+                Новая задача
             </a>
 
         </div>
@@ -33,40 +32,42 @@
             </div>
         @endif
 
-        {{-- Если задач нет --}}
+        {{-- Нет задач --}}
         @if($tasks->isEmpty())
 
-            <div class="mx-auto max-w-2xl rounded-2xl border border-dashed border-gray-300 bg-white px-8 py-16 text-center shadow-sm">
-
-                <div class="text-6xl mb-6">
-                    📭
-                </div>
+            <div class="rounded-2xl border border-dashed border-gray-300 bg-white py-20 text-center">
 
                 <h2 class="text-2xl font-semibold text-gray-900">
                     Пока нет задач
                 </h2>
 
                 <p class="mt-3 text-gray-500">
-                    Создайте первую задачу и начните вести учёт времени.
+                    Создайте первую задачу и начните учитывать рабочее время.
                 </p>
 
                 <a href="{{ route('tasks.create') }}"
-                   class="my-8 inline-flex items-center rounded-xl bg-blue-600 px-6 py-4 font-medium text-white shadow-lg transition-all duration-200 hover:bg-blue-700 hover:shadow-xl">
-                    Создать первую задачу
+                   class="mt-8 inline-flex rounded-xl bg-blue-600 px-6 py-3 font-medium text-white hover:bg-blue-700">
+                    Создать задачу
                 </a>
 
             </div>
 
         @else
 
-            <div class="space-y-4">
+            <div class="space-y-5">
 
                 @foreach($tasks as $task)
 
-                    <div class="rounded-2xl border border-gray-200 bg-white p-6 transition hover:border-blue-300 hover:shadow-md">
+                    @php
+                        $hours = intdiv($task->time_spent_minutes, 60);
+                        $minutes = $task->time_spent_minutes % 60;
+                    @endphp
 
-                        <div class="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+                    <div class="rounded-2xl border border-gray-200 bg-white p-6 transition hover:shadow-md">
 
+                        <div class="flex flex-col gap-8 lg:flex-row lg:justify-between">
+
+                            {{-- Информация --}}
                             <div class="flex-1">
 
                                 <div class="flex items-center gap-3">
@@ -77,42 +78,102 @@
 
                                     @if($task->status === 'completed')
 
-                                        <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
-                                        Завершена
-                                    </span>
+                                        <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
+                                            Завершена
+                                        </span>
 
                                     @else
 
-                                        <span class="rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-700">
-                                        В работе
-                                    </span>
+                                        <span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700">
+                                            В работе
+                                        </span>
 
                                     @endif
 
                                 </div>
 
-                                <p class="mt-3 text-gray-600">
+                                <p class="mt-4 text-gray-600 leading-7">
                                     {{ $task->description ?: 'Без описания' }}
                                 </p>
 
-                                <div class="mt-5 flex items-center gap-2 text-sm text-gray-500">
+                                <div class="mt-8 border-t border-gray-100 pt-5 space-y-3">
 
-                                    <span>⏱</span>
+                                    <div class="flex justify-between text-sm">
 
-                                    <span>
-                                    {{ $task->time_spent_minutes }} минут
-                                </span>
+                                        <span class="text-gray-500">
+                                            Всего времени
+                                        </span>
+
+                                        <span class="font-medium text-gray-900">
+                                            {{ $hours }} ч {{ $minutes }} мин
+                                        </span>
+
+                                    </div>
+
+                                    @if($task->isTimerRunning())
+
+                                        <div class="flex justify-between text-sm">
+
+                                            <span class="text-gray-500">
+                                                Текущая сессия
+                                            </span>
+
+                                            <span
+                                                class="timer font-mono font-semibold text-gray-900"
+                                                data-start="{{ $task->started_at->timestamp }}">
+                                                00:00:00
+                                            </span>
+
+                                        </div>
+
+                                    @endif
 
                                 </div>
 
                             </div>
 
-                            <div class="flex gap-3">
+                            {{-- Панель действий --}}
+                            <div class="w-full lg:w-60">
 
-                                <a href="{{ route('tasks.edit', $task) }}"
-                                   class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100">
-                                    Редактировать
-                                </a>
+                                <div class="flex flex-col gap-3">
+
+                                    @if($task->isTimerRunning())
+
+                                        <form method="POST" action="{{ route('tasks.stop', $task) }}">
+                                            @csrf
+
+                                            <button
+                                                class="w-full rounded-xl border border-red-300 px-4 py-3 text-sm font-medium text-red-600 transition hover:bg-red-50">
+                                                Остановить таймер
+                                            </button>
+
+                                        </form>
+
+                                    @else
+
+                                        <form method="POST" action="{{ route('tasks.start', $task) }}">
+                                            @csrf
+
+                                            <button
+                                                class="w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-medium text-white transition hover:bg-blue-700">
+                                                Запустить таймер
+                                            </button>
+
+                                        </form>
+
+                                    @endif
+
+                                    <a href="{{ route('tasks.edit', $task) }}"
+                                       class="w-full rounded-xl border border-gray-300 px-4 py-3 text-center text-sm font-medium text-gray-700 transition hover:bg-gray-50">
+                                        Редактировать
+                                    </a>
+
+                                    <a href="#"
+                                        class="w-full rounded-xl border border-gray-300 px-4 py-3 text-center text-sm font-medium text-gray-700 transition hover:bg-gray-50">
+                                        Удалить
+                                    </a>
+
+                                </div>
 
                             </div>
 

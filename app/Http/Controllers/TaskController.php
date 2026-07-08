@@ -67,4 +67,22 @@ class TaskController extends Controller
 
         return redirect()->route('tasks.index');
     }
+
+    public function start(Task $task)
+    {
+        $this->authorize('update', $task);
+
+        $task->startTimer();
+
+        return back();
+    }
+
+    public function stop(Task $task)
+    {
+        $this->authorize('update', $task);
+
+        $task->stopTimer();
+
+        return back();
+    }
 }
