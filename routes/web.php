@@ -27,6 +27,7 @@ Route::prefix('tasks')->name('tasks.')->group(function () {
     Route::put('/{task}', [TaskController::class, 'update'])->name('update');
     Route::post('/{task}/start', [TaskController::class, 'start'])->name('start');
     Route::post('/{task}/stop', [TaskController::class, 'stop'])->name('stop');
+    Route::get('/{task}/show', [TaskController::class, 'show'])->name('show');
 });
 
 require __DIR__.'/auth.php';

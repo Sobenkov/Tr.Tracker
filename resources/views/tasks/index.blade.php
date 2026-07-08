@@ -68,7 +68,7 @@
                         <div class="flex flex-col gap-8 lg:flex-row lg:justify-between">
 
                             {{-- Информация --}}
-                            <a href="{{ route('tasks.edit', $task) }}" class="flex-1">
+                            <a href="{{ route('tasks.show', $task) }}" class="flex-1">
 
                                 <div class="flex items-center gap-3">
 
@@ -163,10 +163,10 @@
 
                                     @endif
 
-                                    {{--<a href="{{ route('tasks.edit', $task) }}"
+                                    <a href="{{ route('tasks.edit', $task) }}"
                                        class="w-full rounded-xl border border-gray-300 px-4 py-3 text-center text-sm font-medium text-gray-700 transition hover:bg-gray-50">
                                         Редактировать
-                                    </a>--}}
+                                    </a>
 
                                     <a href="#"
                                         class="w-full rounded-xl border border-gray-300 px-4 py-3 text-center text-sm font-medium text-gray-700 transition hover:bg-gray-50">
